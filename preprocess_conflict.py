@@ -1,11 +1,10 @@
+from hashlib import new
 import pandas as pd
 import matplotlib.pyplot as plt
+from datetime import timedelta
 
 df = pd.read_csv ('list_conflict_events.csv')
 
-print(df[-30:].to_string())
-print(df.shape)
-quit()
 # print the column names
 print (df.columns)
 
@@ -17,7 +16,7 @@ process_df= (df[[
 
 
 # drop the first row ; it contains some irrevant flag strings
-process_df= process_df.drop([0])  
+process_df = process_df.drop([0]) 
 print(process_df.location.value_counts())
 print(process_df.event_type.value_counts())
 
@@ -38,7 +37,7 @@ for year in range(2010, 2021):
               gen_date =str(year)+"-"+str(month).zfill(2)
               count = len(process_df[process_df.event_date == gen_date])
               fatatility_count = process_df[process_df.event_date == gen_date]['fatalities'].sum()
-              row = {'month': gen_date, 'conflict_count': count, 'fatalities' : fatatility_count}
+              row = {'date': gen_date, 'conflict_count': count, 'fatalities' : fatatility_count}
               new_table.append(row)
        #
 #
@@ -46,13 +45,16 @@ print(pd.DataFrame(new_table))
 
 # Save the preprocessed file
 new_df =pd.DataFrame(new_table) 
-new_df["month"] = pd.to_datetime(new_df["month"]) 
+new_df["date"] = pd.to_datetime(new_df["date"]) 
+new_df['date'] = new_df['date'] + timedelta(days=14)
+new_df.set_index('date',inplace=True)
+new_df = new_df[:-1]
 new_df.to_csv('processed_conflict_events.csv') 
 
 # plot the dataframe
 # formatting x axis labels
 plt.rcParams.update({'font.size': 12})
-plt.plot(new_df['month'], new_df['conflict_count'])
+plt.plot(new_df['conflict_count'])
 plt.title("Number of conflict events per month")
 plt.xlabel("Year")
 plt.ylabel("Number of conflicts")

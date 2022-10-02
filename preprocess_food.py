@@ -13,7 +13,7 @@ process_df= (df[['date', 'admin1',  'market',
        'price', 'usdprice']])
 
 # drop the first row ; it contains some irrevant flag strings
-process_df= process_df.drop([0])  
+process_df = process_df.drop([0]) 
 
 # convert price column into number 
 process_df["price"] = pd.to_numeric(process_df["price"]) 
@@ -31,7 +31,7 @@ cond = process_df["pricetype"] == "Retail"
 process_df = process_df[cond]    
 
 # Select price for dates after 2010
-cond = (process_df['date'] >= '2010-01-01') & (process_df['date'] < '2021-01-01')
+cond = (process_df['date'] >= '2010-01-01') & (process_df['date'] < '2020-12-01')
 process_df = process_df[cond]
 
 # TODO: Select price for only Dhaka
