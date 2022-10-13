@@ -2,7 +2,6 @@ from __future__ import with_statement
 from cProfile import label
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import timedelta
 
 df = pd.read_csv ('wfp_food_prices_bgd.csv')
 
