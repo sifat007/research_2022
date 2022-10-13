@@ -68,7 +68,7 @@ def plot_dataframe(df):
         #ax.tick_params(labelsize=6)
     #
     plt.tight_layout(); 
-    plt.show()
+    #plt.show()
 #
 
 # Plot original dataframe
@@ -94,4 +94,8 @@ print("=============================================================\n\n")
 fevd = model_fit.fevd(13)
 fevd.summary()
 fevd.plot()
+
+# 11. Plot the residuals(errors) of VAR
+plot_dataframe(model_fit.resid)
+
 plt.show()
