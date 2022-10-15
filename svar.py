@@ -1,4 +1,3 @@
-from tkinter import W
 import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
