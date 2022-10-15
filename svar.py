@@ -87,7 +87,8 @@ plot_dataframe(df_differenced)
 model = VAR(df_differenced)
 
 # 8. Fit the VAR model
-model_fit = model.fit(maxlags=13)
+MAX_LAG=13
+model_fit = model.fit(maxlags=MAX_LAG)
 
 # 9. Print summary of the VAR model
 print(model_fit.summary())
@@ -98,19 +99,15 @@ print(durbin_watson(model_fit.resid))
 print("=============================================================\n\n")
 
 # 11. Calculate FEVD (Forcast Error Variance Decomposition)
-fevd = model_fit.fevd(13)
+fevd = model_fit.fevd(MAX_LAG)
 fevd.summary()
 fevd.plot()
 
 # 12. Plot the residuals(errors) of VAR
 plot_dataframe(model_fit.resid)
 
-#print(model_fit.forecast(df_differenced.values[-13:], 5))
-#
-#model_fit.plot_forecast(10, plot_stderr=False) 
-
 # 13. Forecast
-forecast_input = df_differenced.values[-13:]
+forecast_input = df_differenced.values[-MAX_LAG:]
 fc = model_fit.forecast(y=forecast_input, steps=TEST_SIZE)
 df_forecast = pd.DataFrame(fc, index=df_food_conflict_test.index, columns=df_food_conflict_test.columns)
 print(df_forecast)
