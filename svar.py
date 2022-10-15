@@ -18,6 +18,11 @@ print(df_conflict.head())
 df_food_conflict = df_food.merge(df_conflict.conflict_count, on='date')
 print(df_food_conflict.head())
 
+# 3. Split the dataset into train and test
+TEST_SIZE = 5
+df_food_conflict_train = df_food_conflict[:-TEST_SIZE]
+df_food_conflict_test = df_food_conflict[-TEST_SIZE:]
+
 # Function to test stationarity
 def perform_adf_test(name, series):
     result = adfuller(series)
@@ -28,11 +33,11 @@ def perform_adf_test(name, series):
     print("=====================================================================")
 #
 
-# 3. Test stationarity of the original time series
-perform_adf_test("Rice", df_food_conflict.rice)
-perform_adf_test("Oil", df_food_conflict.oil)
-perform_adf_test("Wheat", df_food_conflict.wheat)
-perform_adf_test("Conflict", df_food_conflict.conflict_count)
+# 4. Test stationarity of the original time series
+perform_adf_test("Rice", df_food_conflict_train.rice)
+perform_adf_test("Oil", df_food_conflict_train.oil)
+perform_adf_test("Wheat", df_food_conflict_train.wheat)
+perform_adf_test("Conflict", df_food_conflict_train.conflict_count)
 
 # Note: Can achieve stationarity without normalization. Skipping normalization.
 #def normalize(df):
@@ -43,12 +48,6 @@ perform_adf_test("Conflict", df_food_conflict.conflict_count)
 # normalize the food dataframe
 #normalize(df_food)
 
-
-# 4. Split the dataset into train and test
-TEST_SIZE = 5
-
-df_food_conflict_train = df_food_conflict[:-TEST_SIZE]
-df_food_conflict_test = df_food_conflict[-TEST_SIZE:]
 
 # 5. Take the first difference of dataframe to achieve stationarity
 df_differenced = df_food_conflict_train.diff().dropna()
