@@ -44,11 +44,18 @@ perform_adf_test("Conflict", df_food_conflict.conflict_count)
 # normalize the food dataframe
 #normalize(df_food)
 
-# 4. Take the first difference of dataframe to achieve stationarity
-df_differenced = df_food_conflict.diff().dropna()
+
+# 4. Split the dataset into train and test
+TEST_SIZE = 5
+
+df_food_conflict_train = df_food_conflict[:-TEST_SIZE]
+df_food_conflict_test = df_food_conflict[-TEST_SIZE:]
+
+# 5. Take the first difference of dataframe to achieve stationarity
+df_differenced = df_food_conflict_train.diff().dropna()
 
 
-# 5. Test stationarity of the differenced time series
+# 6. Test stationarity of the differenced time series
 perform_adf_test("Rice",df_differenced.rice)
 perform_adf_test("Oil",df_differenced.oil)
 perform_adf_test("Wheat",df_differenced.wheat)
@@ -76,26 +83,49 @@ plot_dataframe(df_food_conflict)
 # Plot differenced dataframe
 plot_dataframe(df_differenced)
 
-# 6. Create the VAR model
+# 7. Create the VAR model
 model = VAR(df_differenced)
 
-# 7. Fit the VAR model
+# 8. Fit the VAR model
 model_fit = model.fit(maxlags=13)
 
-# 8. Print summary of the VAR model
+# 9. Print summary of the VAR model
 print(model_fit.summary())
 
-# 9. Run Durbin Watson test to make sure that there are no leftover pattern that were not captured by the VAR model
+# 10. Run Durbin Watson test to make sure that there are no leftover pattern that were not captured by the VAR model
 print("Check for left overpattern in the residual(error) using Durbin Watson function: ")
 print(durbin_watson(model_fit.resid))
 print("=============================================================\n\n")
 
-# 10. Calculate FEVD (Forcast Error Variance Decomposition)
+# 11. Calculate FEVD (Forcast Error Variance Decomposition)
 fevd = model_fit.fevd(13)
 fevd.summary()
 fevd.plot()
 
-# 11. Plot the residuals(errors) of VAR
+# 12. Plot the residuals(errors) of VAR
 plot_dataframe(model_fit.resid)
 
+#print(model_fit.forecast(df_differenced.values[-13:], 5))
+#
+#model_fit.plot_forecast(10, plot_stderr=False) 
+
+# 13. Forecast
+forecast_input = df_differenced.values[-13:]
+fc = model_fit.forecast(y=forecast_input, steps=TEST_SIZE)
+df_forecast = pd.DataFrame(fc, index=df_food_conflict_test.index, columns=df_food_conflict_test.columns)
+print(df_forecast)
+
+# NOTE: becase we trained the model with first diff data, the forcast is in first diff
+# 14. Revert first diff of the forcast
+df_forecast_actual = df_food_conflict_train.iloc[-1] + df_forecast.cumsum()
+print(df_forecast)
+print(df_forecast_actual)
+print(df_food_conflict_test)
+
+# 15. Plot forcasted vs actual conflict events
+plt.figure(figsize=(10,6))
+plt.title("Forcasting Conflict Events")
+plt.plot(df_forecast_actual.conflict_count, label="forcast")
+plt.plot(df_food_conflict.conflict_count, label="original")
+plt.legend()
 plt.show()
