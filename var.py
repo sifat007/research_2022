@@ -18,6 +18,17 @@ print(df_conflict.head())
 df_food_conflict = df_food.merge(df_conflict.conflict_count, on='date')
 print(df_food_conflict.head())
 
+
+# Find statistics
+avg = df_food_conflict.mean()
+stdev = df_food_conflict.std()
+print(avg)
+
+print(stdev)
+
+print(stdev/avg)
+
+
 # 3. Split the dataset into train and test
 TEST_SIZE = 5
 df_food_conflict_train = df_food_conflict[:-TEST_SIZE]
